@@ -5,9 +5,9 @@ export PATH=${PATH}:${PWD}/bin
 DISTRIBUTION=libjpeg-turbo-1.3.0.tar.gz
 ROOT=${PWD}/libjpeg-turbo-1.3.0
 LIB=${PWD}/lib
+INC=${PWD}/include
 
-rm -rf ${ROOT}
-rm -rf ${LIB}
+rm -rf ${ROOT} ${LIB} ${INCLUDE}
 tar xzf distribution/${DISTRIBUTION}
 cd ${ROOT}
 
@@ -42,6 +42,8 @@ make || exit
 
 mkdir -p ${LIB}/${PLATFORM}/${ARCH}
 cp .libs/lib{jpeg,turbojpeg}.a ${LIB}/${PLATFORM}/${ARCH}
+mkdir -p ${INC}
+cp {jconfig,jerror,jmorecfg,jpeglib,turbojpeg}.h ${INC}
 
 make clean
 
