@@ -78,6 +78,35 @@ make clean
 
 # --------------------------------------------------
 
+export PLATFORM="iPhoneOS"
+ARCH="arm64"
+export IOS_CFLAGS="-arch ${ARCH}"
+echo "Building for ${PLATFORM} ${ARCH}..."
+
+export DEVROOT="${DEVELOPER}/Platforms/${PLATFORM}.platform/Developer"
+export SDKROOT="${DEVROOT}/SDKs/${PLATFORM}${IPHONE_SDK}.sdk"
+export CC=`xcrun -find gcc`
+export CXX=`xcrun -find g++`
+export LD=`xcrun -find ld`
+export NASM=`xcrun -find nasm`
+export CFLAGS="-O3 ${IOS_CFLAGS} -isysroot ${SDKROOT}"
+export LDFLAGS="${IOS_CFLAGS} -isysroot ${SDKROOT}"
+export CPPFLAGS="${CFLAGS}"
+export CFLAGS="${CFLAGS} -miphoneos-version-min=${IPHONE_MIN_VERSION}"
+
+./configure --with-jpeg8 --host arm-apple-darwin --enable-static --disable-shared || exit
+
+sed -i '' 's/\(^LTCCASCOMPILE[[:space:]]*=[[:space:]]*$(LIBTOOL)[[:space:]][[:space:]]*\)\(--mode=compile $(CCAS)\)/\1--tag=CC \2/' simd/Makefile
+
+make || exit
+
+mkdir -p ${LIB}/${PLATFORM}/${ARCH}
+cp .libs/lib{jpeg,turbojpeg}.a ${LIB}/${PLATFORM}/${ARCH}
+
+make clean
+
+# --------------------------------------------------
+
 export PLATFORM="iPhoneSimulator"
 ARCH="i386"
 export IOS_CFLAGS="-arch ${ARCH}"
