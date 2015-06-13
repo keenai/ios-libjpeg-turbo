@@ -13,153 +13,215 @@ cd ${ROOT}
 
 export IPHONE_SDK=${IPHONE_SDK="7.1"}
 export IPHONE_MIN_VERSION="7.0"
+export MACOSX_SDK=${MACOSX_SDK="none"}
+export MACOSX_MIN_VERSION="10.10"
 export DEVELOPER=`xcode-select --print-path`
 
 # --------------------------------------------------
 
-export PLATFORM="iPhoneOS"
-ARCH="armv7"
-export IOS_CFLAGS="-arch ${ARCH}"
-echo "Building for ${PLATFORM} ${ARCH}..."
+if [ ! -z "${IPHONE_SDK}" -a "${IPHONE_SDK}" != "none" ] ; then
+    export PLATFORM="iPhoneOS"
+    ARCH="armv7"
+    export IOS_CFLAGS="-arch ${ARCH}"
+    echo "Building for ${PLATFORM} ${ARCH}..."
 
-export DEVROOT="${DEVELOPER}/Platforms/${PLATFORM}.platform/Developer"
-export SDKROOT="${DEVROOT}/SDKs/${PLATFORM}${IPHONE_SDK}.sdk"
-export CC=`xcrun -find gcc`
-export CXX=`xcrun -find g++`
-export LD=`xcrun -find ld`
-export NASM=`xcrun -find nasm`
-export CFLAGS="-O3 ${IOS_CFLAGS} -isysroot ${SDKROOT}"
-export LDFLAGS="${IOS_CFLAGS} -isysroot ${SDKROOT}"
-export CPPFLAGS="${CFLAGS}"
-export CFLAGS="${CFLAGS} -miphoneos-version-min=${IPHONE_MIN_VERSION}"
+    export DEVROOT="${DEVELOPER}/Platforms/${PLATFORM}.platform/Developer"
+    export SDKROOT="${DEVROOT}/SDKs/${PLATFORM}${IPHONE_SDK}.sdk"
+    export CC=`xcrun -find gcc`
+    export CXX=`xcrun -find g++`
+    export LD=`xcrun -find ld`
+    export NASM=`xcrun -find nasm`
+    export CFLAGS="-O3 ${IOS_CFLAGS} -isysroot ${SDKROOT}"
+    export LDFLAGS="${IOS_CFLAGS} -isysroot ${SDKROOT}"
+    export CPPFLAGS="${CFLAGS}"
+    export CFLAGS="${CFLAGS} -miphoneos-version-min=${IPHONE_MIN_VERSION}"
 
-./configure --with-jpeg8 --host arm-apple-darwin --enable-static --disable-shared || exit
+    ./configure --with-jpeg8 --host arm-apple-darwin --enable-static --disable-shared || exit
 
-sed -i '' 's/\(^LTCCASCOMPILE[[:space:]]*=[[:space:]]*$(LIBTOOL)[[:space:]][[:space:]]*\)\(--mode=compile $(CCAS)\)/\1--tag=CC \2/' simd/Makefile
-sed -i '' -e 's/\(^[[:space:]]*ldrd[[:space:]][[:space:]]*r4[[:space:]]*,\)\([[:space:]]*\[[[:space:]]*COEF_BLOCK\)/\1 r5,\2/' simd/jsimd_arm_neon.S
+    sed -i '' 's/\(^LTCCASCOMPILE[[:space:]]*=[[:space:]]*$(LIBTOOL)[[:space:]][[:space:]]*\)\(--mode=compile $(CCAS)\)/\1--tag=CC \2/' simd/Makefile
+    sed -i '' -e 's/\(^[[:space:]]*ldrd[[:space:]][[:space:]]*r4[[:space:]]*,\)\([[:space:]]*\[[[:space:]]*COEF_BLOCK\)/\1 r5,\2/' simd/jsimd_arm_neon.S
 
-make || exit
+    make || exit
 
-mkdir -p ${LIB}/${PLATFORM}/${ARCH}
-cp .libs/lib{jpeg,turbojpeg}.a ${LIB}/${PLATFORM}/${ARCH}
-mkdir -p ${INC}
-cp {jconfig,jerror,jmorecfg,jpeglib,turbojpeg}.h ${INC}
+    mkdir -p ${LIB}/${PLATFORM}/${ARCH}
+    cp .libs/lib{jpeg,turbojpeg}.a ${LIB}/${PLATFORM}/${ARCH}
+    mkdir -p ${INC}
+    cp {jconfig,jerror,jmorecfg,jpeglib,turbojpeg}.h ${INC}
 
-make clean
+    make clean
 
-# --------------------------------------------------
+    # --------------------------------------------------
 
-export PLATFORM="iPhoneOS"
-ARCH="armv7s"
-export IOS_CFLAGS="-arch ${ARCH}"
-echo "Building for ${PLATFORM} ${ARCH}..."
+    export PLATFORM="iPhoneOS"
+    ARCH="armv7s"
+    export IOS_CFLAGS="-arch ${ARCH}"
+    echo "Building for ${PLATFORM} ${ARCH}..."
 
-export DEVROOT="${DEVELOPER}/Platforms/${PLATFORM}.platform/Developer"
-export SDKROOT="${DEVROOT}/SDKs/${PLATFORM}${IPHONE_SDK}.sdk"
-export CC=`xcrun -find gcc`
-export CXX=`xcrun -find g++`
-export LD=`xcrun -find ld`
-export NASM=`xcrun -find nasm`
-export CFLAGS="-O3 ${IOS_CFLAGS} -isysroot ${SDKROOT}"
-export LDFLAGS="${IOS_CFLAGS} -isysroot ${SDKROOT}"
-export CPPFLAGS="${CFLAGS}"
-export CFLAGS="${CFLAGS} -miphoneos-version-min=${IPHONE_MIN_VERSION}"
+    export DEVROOT="${DEVELOPER}/Platforms/${PLATFORM}.platform/Developer"
+    export SDKROOT="${DEVROOT}/SDKs/${PLATFORM}${IPHONE_SDK}.sdk"
+    export CC=`xcrun -find gcc`
+    export CXX=`xcrun -find g++`
+    export LD=`xcrun -find ld`
+    export NASM=`xcrun -find nasm`
+    export CFLAGS="-O3 ${IOS_CFLAGS} -isysroot ${SDKROOT}"
+    export LDFLAGS="${IOS_CFLAGS} -isysroot ${SDKROOT}"
+    export CPPFLAGS="${CFLAGS}"
+    export CFLAGS="${CFLAGS} -miphoneos-version-min=${IPHONE_MIN_VERSION}"
 
-./configure --with-jpeg8 --host arm-apple-darwin --enable-static --disable-shared || exit
+    ./configure --with-jpeg8 --host arm-apple-darwin --enable-static --disable-shared || exit
 
-sed -i '' 's/\(^LTCCASCOMPILE[[:space:]]*=[[:space:]]*$(LIBTOOL)[[:space:]][[:space:]]*\)\(--mode=compile $(CCAS)\)/\1--tag=CC \2/' simd/Makefile
+    sed -i '' 's/\(^LTCCASCOMPILE[[:space:]]*=[[:space:]]*$(LIBTOOL)[[:space:]][[:space:]]*\)\(--mode=compile $(CCAS)\)/\1--tag=CC \2/' simd/Makefile
 
-make || exit
+    make || exit
 
-mkdir -p ${LIB}/${PLATFORM}/${ARCH}
-cp .libs/lib{jpeg,turbojpeg}.a ${LIB}/${PLATFORM}/${ARCH}
+    mkdir -p ${LIB}/${PLATFORM}/${ARCH}
+    cp .libs/lib{jpeg,turbojpeg}.a ${LIB}/${PLATFORM}/${ARCH}
 
-make clean
+    make clean
 
-# --------------------------------------------------
+    # --------------------------------------------------
 
-export PLATFORM="iPhoneOS"
-ARCH="arm64"
-export IOS_CFLAGS="-arch ${ARCH}"
-echo "Building for ${PLATFORM} ${ARCH}..."
+    export PLATFORM="iPhoneOS"
+    ARCH="arm64"
+    export IOS_CFLAGS="-arch ${ARCH}"
+    echo "Building for ${PLATFORM} ${ARCH}..."
 
-export DEVROOT="${DEVELOPER}/Platforms/${PLATFORM}.platform/Developer"
-export SDKROOT="${DEVROOT}/SDKs/${PLATFORM}${IPHONE_SDK}.sdk"
-export CC=`xcrun -find gcc`
-export CXX=`xcrun -find g++`
-export LD=`xcrun -find ld`
-export NASM=`xcrun -find nasm`
-export CFLAGS="-O3 ${IOS_CFLAGS} -isysroot ${SDKROOT}"
-export LDFLAGS="${IOS_CFLAGS} -isysroot ${SDKROOT}"
-export CPPFLAGS="${CFLAGS}"
-export CFLAGS="${CFLAGS} -miphoneos-version-min=${IPHONE_MIN_VERSION}"
+    export DEVROOT="${DEVELOPER}/Platforms/${PLATFORM}.platform/Developer"
+    export SDKROOT="${DEVROOT}/SDKs/${PLATFORM}${IPHONE_SDK}.sdk"
+    export CC=`xcrun -find gcc`
+    export CXX=`xcrun -find g++`
+    export LD=`xcrun -find ld`
+    export NASM=`xcrun -find nasm`
+    export CFLAGS="-O3 ${IOS_CFLAGS} -isysroot ${SDKROOT}"
+    export LDFLAGS="${IOS_CFLAGS} -isysroot ${SDKROOT}"
+    export CPPFLAGS="${CFLAGS}"
+    export CFLAGS="${CFLAGS} -miphoneos-version-min=${IPHONE_MIN_VERSION}"
 
-./configure --with-jpeg8 --host arm-apple-darwin --enable-static --disable-shared || exit
+    ./configure --with-jpeg8 --host arm-apple-darwin --enable-static --disable-shared || exit
 
-sed -i '' 's/\(^LTCCASCOMPILE[[:space:]]*=[[:space:]]*$(LIBTOOL)[[:space:]][[:space:]]*\)\(--mode=compile $(CCAS)\)/\1--tag=CC \2/' simd/Makefile
+    sed -i '' 's/\(^LTCCASCOMPILE[[:space:]]*=[[:space:]]*$(LIBTOOL)[[:space:]][[:space:]]*\)\(--mode=compile $(CCAS)\)/\1--tag=CC \2/' simd/Makefile
 
-make || exit
+    make || exit
 
-mkdir -p ${LIB}/${PLATFORM}/${ARCH}
-cp .libs/lib{jpeg,turbojpeg}.a ${LIB}/${PLATFORM}/${ARCH}
+    mkdir -p ${LIB}/${PLATFORM}/${ARCH}
+    cp .libs/lib{jpeg,turbojpeg}.a ${LIB}/${PLATFORM}/${ARCH}
 
-make clean
+    make clean
 
-# --------------------------------------------------
+    # --------------------------------------------------
 
-export PLATFORM="iPhoneSimulator"
-ARCH="i386"
-export IOS_CFLAGS="-arch ${ARCH}"
-echo "Building for ${PLATFORM} ${ARCH}..."
+    export PLATFORM="iPhoneSimulator"
+    ARCH="i386"
+    export IOS_CFLAGS="-arch ${ARCH}"
+    echo "Building for ${PLATFORM} ${ARCH}..."
 
-export DEVROOT="${DEVELOPER}/Platforms/${PLATFORM}.platform/Developer"
-export SDKROOT="${DEVROOT}/SDKs/${PLATFORM}${IPHONE_SDK}.sdk"
-export CC=`xcrun -find gcc`
-export CXX=`xcrun -find g++`
-export LD=`xcrun -find ld`
-export NASM=`xcrun -find nasm`
-export CFLAGS="-O3 ${IOS_CFLAGS} -isysroot ${SDKROOT}"
-export LDFLAGS="${IOS_CFLAGS} -isysroot ${SDKROOT}"
-export CPPFLAGS="${CFLAGS}"
-export CFLAGS="${CFLAGS} -miphoneos-version-min=${IPHONE_MIN_VERSION}"
+    export DEVROOT="${DEVELOPER}/Platforms/${PLATFORM}.platform/Developer"
+    export SDKROOT="${DEVROOT}/SDKs/${PLATFORM}${IPHONE_SDK}.sdk"
+    export CC=`xcrun -find gcc`
+    export CXX=`xcrun -find g++`
+    export LD=`xcrun -find ld`
+    export NASM=`xcrun -find nasm`
+    export CFLAGS="-O3 ${IOS_CFLAGS} -isysroot ${SDKROOT}"
+    export LDFLAGS="${IOS_CFLAGS} -isysroot ${SDKROOT}"
+    export CPPFLAGS="${CFLAGS}"
+    export CFLAGS="${CFLAGS} -miphoneos-version-min=${IPHONE_MIN_VERSION}"
 
-./configure --with-jpeg8 --host i386-apple-darwin --enable-static --disable-shared LDFLAGS="$LDFLAGS -miphoneos-version-min=${IPHONE_MIN_VERSION}" || exit
+    ./configure --with-jpeg8 --host i386-apple-darwin --enable-static --disable-shared LDFLAGS="$LDFLAGS -miphoneos-version-min=${IPHONE_MIN_VERSION}" || exit
 
-make || exit
+    make || exit
 
-mkdir -p ${LIB}/${PLATFORM}/${ARCH}
-cp .libs/lib{jpeg,turbojpeg}.a ${LIB}/${PLATFORM}/${ARCH}
+    mkdir -p ${LIB}/${PLATFORM}/${ARCH}
+    cp .libs/lib{jpeg,turbojpeg}.a ${LIB}/${PLATFORM}/${ARCH}
 
-make clean
+    make clean
 
-# --------------------------------------------------
+    # --------------------------------------------------
 
-export PLATFORM="iPhoneSimulator"
-ARCH="x86_64"
-export IOS_CFLAGS="-arch ${ARCH}"
-echo "Building for ${PLATFORM} ${ARCH}..."
+    export PLATFORM="iPhoneSimulator"
+    ARCH="x86_64"
+    export IOS_CFLAGS="-arch ${ARCH}"
+    echo "Building for ${PLATFORM} ${ARCH}..."
 
-export DEVROOT="${DEVELOPER}/Platforms/${PLATFORM}.platform/Developer"
-export SDKROOT="${DEVROOT}/SDKs/${PLATFORM}${IPHONE_SDK}.sdk"
-export CC=`xcrun -find gcc`
-export CXX=`xcrun -find g++`
-export LD=`xcrun -find ld`
-export NASM=`xcrun -find nasm`
-export CFLAGS="-O3 ${IOS_CFLAGS} -isysroot ${SDKROOT}"
-export LDFLAGS="${IOS_CFLAGS} -isysroot ${SDKROOT}"
-export CPPFLAGS="${CFLAGS}"
-export CFLAGS="${CFLAGS} -miphoneos-version-min=${IPHONE_MIN_VERSION}"
+    export DEVROOT="${DEVELOPER}/Platforms/${PLATFORM}.platform/Developer"
+    export SDKROOT="${DEVROOT}/SDKs/${PLATFORM}${IPHONE_SDK}.sdk"
+    export CC=`xcrun -find gcc`
+    export CXX=`xcrun -find g++`
+    export LD=`xcrun -find ld`
+    export NASM=`xcrun -find nasm`
+    export CFLAGS="-O3 ${IOS_CFLAGS} -isysroot ${SDKROOT}"
+    export LDFLAGS="${IOS_CFLAGS} -isysroot ${SDKROOT}"
+    export CPPFLAGS="${CFLAGS}"
+    export CFLAGS="${CFLAGS} -miphoneos-version-min=${IPHONE_MIN_VERSION}"
 
-./configure --with-jpeg8 --host x86_64-apple-darwin --enable-static --disable-shared --without-simd || exit
+    ./configure --with-jpeg8 --host x86_64-apple-darwin --enable-static --disable-shared --without-simd || exit
 
-make || exit
+    make || exit
 
-mkdir -p ${LIB}/${PLATFORM}/${ARCH}
-cp .libs/lib{jpeg,turbojpeg}.a ${LIB}/${PLATFORM}/${ARCH}
+    mkdir -p ${LIB}/${PLATFORM}/${ARCH}
+    cp .libs/lib{jpeg,turbojpeg}.a ${LIB}/${PLATFORM}/${ARCH}
 
-make clean
+    make clean
 
-# --------------------------------------------------
+    # --------------------------------------------------
+fi
 
-lipo -create -output ${LIB}/libjpeg.a ${LIB}/*/*/libjpeg.a
-lipo -create -output ${LIB}/libturbojpeg.a ${LIB}/*/*/libturbojpeg.a
+if [ ! -z "${MACOSX_SDK}" -a "${MACOSX_SDK}" != "none" ] ; then
+    export PLATFORM="MacOSX"
+    ARCH="i386"
+    export MACOSX_CFLAGS="-arch ${ARCH}"
+    echo "Building for ${PLATFORM} ${ARCH}..."
+
+    export DEVROOT="${DEVELOPER}/Platforms/${PLATFORM}.platform/Developer"
+    export SDKROOT="${DEVROOT}/SDKs/${PLATFORM}${MACOSX_SDK}.sdk"
+    export CC=`xcrun -find gcc`
+    export CXX=`xcrun -find g++`
+    export LD=`xcrun -find ld`
+    export NASM=`xcrun -find nasm`
+    export CFLAGS="-O3 ${MACOSX_CFLAGS} -isysroot ${SDKROOT}"
+    export LDFLAGS="${MACOSX_CFLAGS} -isysroot ${SDKROOT}"
+    export CPPFLAGS="${CFLAGS}"
+    export CFLAGS="${CFLAGS} -mmacosx-version-min=${MACOSX_MIN_VERSION}"
+
+    ./configure --with-jpeg8 --host i386-apple-darwin --enable-static --disable-shared LDFLAGS="$LDFLAGS -mmacosx-version-min=${MACOSX_MIN_VERSION}" || exit
+
+    make || exit
+
+    mkdir -p ${LIB}/${PLATFORM}/${ARCH}
+    cp .libs/lib{jpeg,turbojpeg}.a ${LIB}/${PLATFORM}/${ARCH}
+    mkdir -p ${INC}
+    cp {jconfig,jerror,jmorecfg,jpeglib,turbojpeg}.h ${INC}
+
+    make clean
+
+    # --------------------------------------------------
+
+    export PLATFORM="MacOSX"
+    ARCH="x86_64"
+    export MACOSX_CFLAGS="-arch ${ARCH}"
+    echo "Building for ${PLATFORM} ${ARCH}..."
+
+    export DEVROOT="${DEVELOPER}/Platforms/${PLATFORM}.platform/Developer"
+    export SDKROOT="${DEVROOT}/SDKs/${PLATFORM}${MACOSX_SDK}.sdk"
+    export CC=`xcrun -find gcc`
+    export CXX=`xcrun -find g++`
+    export LD=`xcrun -find ld`
+    export NASM=`xcrun -find nasm`
+    export CFLAGS="-O3 ${MACOSX_CFLAGS} -isysroot ${SDKROOT}"
+    export LDFLAGS="${MACOSX_CFLAGS} -isysroot ${SDKROOT}"
+    export CPPFLAGS="${CFLAGS}"
+    export CFLAGS="${CFLAGS} -mmacosx-version-min=${MACOSX_MIN_VERSION}"
+
+    ./configure --with-jpeg8 --host x86_64-apple-darwin --enable-static --disable-shared --without-simd || exit
+
+    make || exit
+
+    mkdir -p ${LIB}/${PLATFORM}/${ARCH}
+    cp .libs/lib{jpeg,turbojpeg}.a ${LIB}/${PLATFORM}/${ARCH}
+
+    make clean
+fi
+
+if [ ! -z "${IPHONE_SDK}" -a "${IPHONE_SDK}" != "none" -o ! -z "${MACOSX_SDK}" -a "${MACOSX_SDK}" != "none" ] ; then
+    lipo -create -output ${LIB}/libjpeg.a ${LIB}/*/*/libjpeg.a
+    lipo -create -output ${LIB}/libturbojpeg.a ${LIB}/*/*/libturbojpeg.a
+fi
